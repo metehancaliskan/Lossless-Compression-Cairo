@@ -1,11 +1,14 @@
 use array::ArrayTrait;
 use debug::PrintTrait;
-#[derive(Copy, Drop)]
 fn compressed_data(input:Array<felt252>) -> Array<felt252> {
     let mut count = 0;
     let mut i: usize = 0;
+    let len: usize = input.len();
     let mut compressed_data = ArrayTrait::new();
     loop {
+        if i > len-1 {
+            break;
+        };
         if *input.at(i) == *input.at(i+1) {
             count += 1;
             i += 1;
@@ -16,14 +19,11 @@ fn compressed_data(input:Array<felt252>) -> Array<felt252> {
             count = 0;
             i += 1;
         };
-        if i==input.len()-1 {
+        if i==len-1 {
             count += 1;
             compressed_data.append(count);
             compressed_data.append(*input.at(i));
             i += 1;
-        }
-        if i > input.len()-1 {
-            break;
         };
     };
     return compressed_data;
@@ -32,10 +32,11 @@ fn compressed_data(input:Array<felt252>) -> Array<felt252> {
 fn decompressed_data(compressed_input:Array<felt252>) -> Array<felt252> {
     let mut count = 0;
     let mut i: usize = 0;
+    let len: usize = compressed_input.len();
     let mut decompressed_data = ArrayTrait::new();
     let first_snapshot = @compressed_input;
     loop {
-        if i > first_snapshot.len()-2 {
+        if i > len-2 {
             break;
         };
         count = *first_snapshot.at(i);
@@ -63,7 +64,7 @@ fn main() {
     input.append(5);
     input.append(5);
     input.append(2);
-    compressed_data(input).print();
-    // let comp = compressed_data(input);
-    // decompressed_data(comp).print();
+    // compressed_data(input).print();
+    let comp = compressed_data(input);
+    decompressed_data(comp).print();
 }
